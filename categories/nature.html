@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>nature</title>
+
+    <link rel="stylesheet" href="../style_v2.css">
+    <link rel="stylesheet" href="../styles categories/style_nature.css">
+
+    <style>
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .gallery-item {
+            position: relative;
+        }
+
+        .add-section {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 8px;
+        }
+
+        .add-section input {
+            margin: 10px 5px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .add-section button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .add-section button:hover {
+            background: #0056b3;
+        }
+
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .login-prompt {
+            padding: 10px;
+            background: #fff3cd;
+            color: #856404;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="container">
+        <a href="../index_v2.html" class="logo">Through My Eyes</a>
+        <nav>
+            <ul>
+                <li><a href="../index_v2.html">Accueil</a></li>
+                <li><a href="../index_v2.html#gallery">Galerie</a></li>
+                <li><a href="../index_v2.html#about">À propos</a></li>
+                <li><a href="../index_v2.html#contact">Contact</a></li>
+                <li id="authNav"></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<section class="category-hero nature-hero">
+    <div class="hero-content">
+        <h1>Galerie Nature</h1>
+        <p>Paysages et éléments naturels</p>
+    </div>
+</section>
+
+<section class="gallery-section">
+    <div class="container">
+        <div id="addSection" style="display:none;">
+            <div class="add-section">
+                <h3>Ajouter une nouvelle image</h3>
+                <input type="text" id="photoTitle" placeholder="Titre de la photo">
+                <input type="text" id="photoDescription" placeholder="Description (optionnel)">
+                <label for="imageInput" class="file-label">Sélectionner image</label>
+                <input type="file" id="imageInput" accept="image/*">
+                <button onclick="addImage()">Ajouter</button>
+                <p id="message"></p>
+            </div>
+        </div>
+
+        <div id="loginPrompt" class="login-prompt" style="display:none;">
+            <p>Connectez-vous pour ajouter des images : <a href="../login.html">Se connecter</a> ou <a href="../register.html">Créer un compte</a></p>
+        </div>
+
+        <div class="gallery-grid nature-gallery">
+            <!-- Les images seront chargées ici par JavaScript -->
+        </div>
+    </div>
+</section>
+
+<section class="back-section">
+    <div class="container">
+        <a href="../index_v2.html" class="back-btn">← Retour aux catégories</a>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2026 Through My Eyes - Galerie Photographique.</p>
+    </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="../auth.js"></script>
+<script src="../gallery.js"></script>
+<script>
+const CATEGORY = 'nature';
+
+// Photos statiques (anciennes photos)
+const STATIC_PHOTOS = [
+  { src: '../images/nature/IMG_4738.jpeg', title: '24/06/2022', description: 'f/5.6, 1/300s, ISO 200' },
+  { src: '../images/nature/IMG_4761.jpeg', title: '24/06/2022', description: 'f/5.6, 1/300s, ISO 200' },
+  { src: '../images/nature/IMG_4878.jpeg', title: '01/06/2022', description: 'f/5.6, 1/300s, ISO 200' },
+  { src: '../images/nature/IMG_0444.jpeg', title: '07/08/2025', description: 'f/1.8, 1/60s, ISO 320' }
+];
+
+// Initialiser la page
+document.addEventListener('DOMContentLoaded', async function() {
+    updateAuthNav();
+    displayAddSection();
+    await loadGallery();
+});
+
+// Charger la galerie (public ou personnel)
+async function loadGallery() {
+    if (auth.isLoggedIn()) {
+        // Mode connecté - afficher les photos personnelles
+        await gallery.displayUserPhotos(CATEGORY, '.nature-gallery');
+    } else {
+        // Mode déconnecté - afficher les photos statiques
+        await gallery.displayPublicPhotos(STATIC_PHOTOS, '.nature-gallery');
+    }
+}
+
+// Mettre à jour la navigation avec les infos de connexion
+function updateAuthNav() {
+    const authNav = document.getElementById('authNav');
+    if (auth.isLoggedIn()) {
+        const user = auth.getUser();
+        authNav.innerHTML = `
+            <span>${user.username}</span> | 
+            <a href="#" onclick="logout()">Déconnexion</a>
+        `;
+    } else {
+        authNav.innerHTML = `<a href="../login.html">Se connecter</a>`;
+    }
+}
+
+// Afficher/masquer la section d'ajout
+function displayAddSection() {
+    const addSection = document.getElementById('addSection');
+    const loginPrompt = document.getElementById('loginPrompt');
+    
+    if (auth.isLoggedIn()) {
+        addSection.style.display = 'block';
+        loginPrompt.style.display = 'none';
+    } else {
+        addSection.style.display = 'none';
+        loginPrompt.style.display = 'block';
+    }
+}
+
+// Ajouter une image
+async function addImage() {
+    if (!auth.isLoggedIn()) {
+        alert('Vous devez être connecté pour ajouter une image');
+        return;
+    }
+
+    const input = document.getElementById("imageInput");
+    const title = document.getElementById("photoTitle").value;
+    const description = document.getElementById("photoDescription").value;
+    const file = input.files[0];
+    const message = document.getElementById("message");
+
+    if (!file) {
+        message.className = 'message error';
+        message.textContent = "Sélectionnez une image !";
+        return;
+    }
+
+    if (!title) {
+        message.className = 'message error';
+        message.textContent = "Entrez un titre !";
+        return;
+    }
+
+    // Convertir l'image en base64
+    const imageUrl = await gallery.fileToBase64(file);
+
+    // Ajouter à la base de données
+    const result = await gallery.addPhoto(title, description, CATEGORY, imageUrl);
+
+    if (result.success) {
+        message.className = 'message success';
+        message.textContent = "Image ajoutée avec succès !";
+        
+        // Réinitialiser le formulaire
+        document.getElementById("photoTitle").value = '';
+        document.getElementById("photoDescription").value = '';
+        input.value = '';
+
+        // Rafraîchir la galerie
+        setTimeout(async () => {
+            await loadGallery();
+        }, 1000);
+    } else {
+        message.className = 'message error';
+        message.textContent = result.message;
+    }
+}
+
+// Déconnexion
+function logout() {
+    auth.logout();
+    updateAuthNav();
+    displayAddSection();
+    loadGallery();
+    alert('Déconnecté !');
+}
+</script>
+
+</body>
+</html>

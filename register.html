@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Créer un compte - Through My Eyes</title>
+  <link rel="stylesheet" href="register.css">
+</head>
+<body class="register-page">
+
+<header class="main-header">
+  <div class="container">
+    <a href="index_v2.html" class="logo">Through My Eyes</a>
+    <nav><ul>
+      <li><a href="index_v2.html">Accueil</a></li>
+      <li><a href="index_v2.html#gallery">Galerie</a></li>
+      <li><a href="index_v2.html#about">À propos</a></li>
+      <li><a href="index_v2.html#contact">Contact</a></li>
+      <li><a href="login.html">Se connecter</a></li>
+    </ul></nav>
+  </div>
+</header>
+
+<div class="register-container">
+  <h2>Créer un compte</h2>
+  <p>Rejoignez la communauté photographique</p>
+
+  <form id="registerForm">
+
+    <!-- Avatar upload -->
+    <div class="avatar-upload-box">
+      <input type="file" id="avatarInput" accept="image/*">
+      <label for="avatarInput" class="avatar-label" id="avatarLabel">
+        <div class="avatar-preview" id="avatarPreview">
+          <span class="avatar-icon">📷</span>
+          <span class="avatar-text">Photo de profil<br><small>Facultatif</small></span>
+        </div>
+      </label>
+    </div>
+
+    <div class="input-box">
+      <input type="text" id="username" required>
+      <label>Nom d'utilisateur</label>
+    </div>
+    <div class="input-box">
+      <input type="email" id="email" required>
+      <label>Email</label>
+    </div>
+    <div class="input-box">
+      <input type="password" id="password" required>
+      <label>Mot de passe</label>
+    </div>
+    <div class="input-box">
+      <input type="password" id="confirmPassword" required>
+      <label>Confirmer le mot de passe</label>
+    </div>
+
+    <button type="submit">Créer un compte</button>
+  </form>
+
+  <p id="message"></p>
+
+  <p class="login-link">Déjà un compte ? <a href="login.html">Se connecter</a></p>
+  <a href="index_v2.html" class="back">← Retour au site</a>
+</div>
+
+<script src="auth.js"></script>
+<script>
+// Avatar preview
+const avatarInput = document.getElementById('avatarInput');
+const avatarPreview = document.getElementById('avatarPreview');
+
+avatarInput.addEventListener('change', function() {
+  const file = this.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    avatarPreview.innerHTML = `<img src="${e.target.result}" alt="Aperçu">`;
+  };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById("registerForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const username        = document.getElementById("username").value;
+  const email           = document.getElementById("email").value;
+  const password        = document.getElementById("password").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+  const message         = document.getElementById("message");
+  const file            = avatarInput.files[0];
+
+  if (password !== confirmPassword) {
+    message.style.color = "#f87171";
+    message.textContent = "Les mots de passe ne correspondent pas !";
+    return;
+  }
+
+  // Convert avatar to base64 if provided
+  let avatar = '';
+  if (file) {
+    avatar = await new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result);
+      r.onerror = reject;
+      r.readAsDataURL(file);
+    });
+  }
+
+  const result = await auth.register(username, email, password, avatar);
+
+  message.style.color = result.success ? "#4ade80" : "#f87171";
+  message.textContent = result.message;
+
+  if (result.success) {
+    setTimeout(() => { window.location.href = "index_v2.html"; }, 1500);
+  }
+});
+</script>
+</body>
+</html>

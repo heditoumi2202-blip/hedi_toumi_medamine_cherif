@@ -1,0 +1,200 @@
+
+.histoire_urbaine-hero {
+    background: linear-gradient(rgba(255, 140, 0, 0.6), rgba(255, 69, 0, 0.6)),
+                url('../images/histoire_urbaine/IMG_3429.jpeg') center/cover;
+    padding: 100px 20px;
+    text-align: center;
+    color: white;
+}
+
+.histoire_urbaine-hero .hero-content h1 {
+    font-size: 48px;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    animation: slideDown 0.8s ease-out;
+}
+
+.histoire_urbaine-hero .hero-content p {
+    font-size: 18px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.histoire_urbaine-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    padding: 60px 0;
+}
+
+.gallery-item {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(255, 140, 0, 0.15);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.gallery-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 140, 0, 0) 0%, rgba(255, 69, 0, 0.2) 100%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.gallery-item:hover {
+    transform: translateY(-15px) rotate(-1deg);
+    box-shadow: 0 20px 40px rgba(255, 140, 0, 0.25);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.15) rotate(1deg);
+}
+
+.item-info {
+    padding: 20px;
+    background: linear-gradient(135deg, #fff8e1 0%, #fff3e0 100%);
+}
+
+.item-info h3 {
+    color: #e65100;
+    font-size: 20px;
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.item-info p {
+    color: #555;
+    font-size: 14px;
+    margin: 0;
+}
+
+.back-section {
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #ffe0b2 0%, #f5f5f5 100%);
+    text-align: center;
+}
+
+.back-btn {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff8c00 0%, #e65100 100%);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+}
+
+.back-btn:hover {
+    background: linear-gradient(135deg, #e65100 0%, #bf360c 100%);
+    transform: translateX(-5px);
+    box-shadow: 0 6px 16px rgba(255, 140, 0, 0.4);
+}
+
+.gallery-section {
+    padding: 60px 20px;
+    background: #ffece1;
+}
+
+.gallery-section .container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+    .histoire_urbaine-gallery {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+
+    .histoire_urbaine-hero .hero-content h1 {
+        font-size: 32px;
+    }
+
+    .gallery-item img {
+        height: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .histoire_urbaine-gallery {
+        grid-template-columns: 1fr;
+    }
+
+    .histoire_urbaine-hero .hero-content h1 {
+        font-size: 24px;
+    }
+}
+/* Section ajout */
+.add-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* cacher input */
+.add-section input[type="file"] {
+    display: none;
+}
+
+/* bouton sélectionner */
+.file-label {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #ff8c00, #e65100);
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+    margin-right: 10px;
+    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+}
+
+.file-label:hover {
+    background: linear-gradient(135deg, #e65100, #bf360c);
+    transform: translateY(-2px);
+}
+
+/* bouton ajouter */
+.add-section button {
+    padding: 10px 20px;
+    border-radius: 30px;
+    background: white;
+    color: #e65100;
+    border: 2px solid #ff8c00;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.add-section button:hover {
+    background: #ff8c00;
+    color: white;
+    transform: translateY(-2px);
+}

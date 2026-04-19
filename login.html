@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="login.css">
+</head>
+<body class="login-page">
+<header class="main-header">
+  <div class="container">
+    <h1 class="logo">Through My Eyes</h1>
+    <nav>
+      <ul>
+        <li><a href="index_v2.html">Accueil</a></li>
+        <li><a href="index_v2.html#gallery">Galerie</a></li>
+        <li><a href="index_v2.html#about">À propos</a></li>
+        <li><a href="index_v2.html#contact">Contact</a></li>
+        <li><a href="login.html">Se connecter</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+<div class="login-container">
+  <h2>Welcome Back</h2>
+  <p>Login to access your dashboard</p>
+
+<form id="loginForm">
+
+  <!-- EMAIL -->
+  <div class="input-box">
+    <input type="email" id="loginEmail" required>
+    <label>Email</label>
+  </div>
+
+  <!-- PASSWORD -->
+  <div class="input-box">
+    <input type="password" id="password" required>
+    <label>Password</label>
+    <span onclick="togglePassword()">👁️</span>
+  </div>
+
+  <button type="submit">Login</button>
+</form>
+
+  <!-- message dynamique -->
+  <p id="message" style="font-size:14px;"></p>
+
+  <p class="register-link">
+    Pas de compte ? <a href="register.html">Créer un compte</a>
+  </p>
+
+  <a href="index_v2.html" class="back">← Retour au site</a>
+</div>
+
+<!-- SCRIPTS -->
+<script src="auth.js"></script>
+<script>
+function togglePassword() {
+  const pass = document.getElementById("password");
+  pass.type = pass.type === "password" ? "text" : "password";
+}
+
+// Connexion avec API
+document.getElementById("loginForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("password").value;
+  const message = document.getElementById("message");
+
+  // Appeler l'API de login
+  const result = await auth.login(email, password);
+  
+  message.style.color = result.success ? "green" : "red";
+  message.textContent = result.message;
+
+  if (result.success) {
+    setTimeout(() => {
+      window.location.href = "index_v2.html";
+    }, 1500);
+  }
+});
+</script>
+
+</body>
+</html>

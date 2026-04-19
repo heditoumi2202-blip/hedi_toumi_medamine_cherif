@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Through My Eyes - Galerie Photographique</title>
+    <link rel="stylesheet" href="style_v2.css">
+    <style>
+        /* ── ACCOUNT MENU ───────────────────────────────── */
+        .account-menu {
+            position: relative;
+            display: inline-block;
+        }
+        .account-trigger {
+            cursor: pointer;
+            color: rgba(255,255,255,0.85);
+            font-size: 0.92rem;
+            font-weight: 500;
+            padding: 7px 14px;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.05);
+            transition: all 0.2s;
+            white-space: nowrap;
+            user-select: none;
+        }
+        .account-menu:hover .account-trigger {
+            background: rgba(79,172,254,0.12);
+            border-color: #4facfe;
+            color: white;
+        }
+        .account-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: #141b2d;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            min-width: 190px;
+            box-shadow: 0 12px 36px rgba(0,0,0,0.55);
+            z-index: 2000;
+        }
+        .account-menu:hover .account-dropdown { display: block; }
+        .account-dropdown a {
+            display: block;
+            padding: 12px 18px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .account-dropdown a:hover { background: rgba(255,255,255,0.06); color: white; }
+        .account-dropdown a.danger { color: #f87171; }
+        .account-dropdown a.danger:hover { background: rgba(248,113,113,0.08); }
+        .account-dropdown a + a { border-top: 1px solid rgba(255,255,255,0.07); }
+
+        /* ── HEADER SEARCH ──────────────────────────────── */
+        .header-search-wrapper {
+            position: relative;
+            flex: 1;
+            max-width: 340px;
+            margin: 0 40px;
+        }
+        .search-icon {
+            position: absolute;
+            left: 14px; top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px; pointer-events: none;
+            z-index: 1; opacity: 0.6;
+        }
+        #searchInput {
+            width: 100%;
+            padding: 9px 16px 9px 38px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 50px;
+            color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            outline: none;
+            transition: all 0.25s;
+        }
+        #searchInput::placeholder { color: #475569; }
+        #searchInput:focus {
+            border-color: #4facfe;
+            background: rgba(79,172,254,0.08);
+            box-shadow: 0 0 0 3px rgba(79,172,254,0.15);
+        }
+        .search-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0; right: 0;
+            background: #141b2d;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+            z-index: 2000;
+        }
+        .search-dropdown.open { display: block; }
+        .search-item {
+            display: flex; align-items: center; gap: 14px;
+            padding: 14px 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        .search-item:hover { background: rgba(79,172,254,0.08); }
+        .search-avatar {
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4facfe, #00c6ff);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 15px; color: white;
+            flex-shrink: 0;
+        }
+        .search-name { font-size: 15px; font-weight: 500; color: #f1f5f9; }
+        .search-sub  { font-size: 12px; color: #475569; margin-top: 1px; }
+        .search-no-result {
+            padding: 20px; text-align: center;
+            color: #475569; font-size: 14px;
+        }
+        #add-category-btn {
+            display: inline-block;
+            margin: 32px auto 0;
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #4facfe, #00c6ff);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            box-shadow: 0 8px 24px rgba(79,172,254,0.35);
+            transition: all 0.3s;
+        }
+        #add-category-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(79,172,254,0.5);
+        }
+
+        #cat-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(6px);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+        }
+        #cat-box {
+            background: #141b2d;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 36px;
+            width: 440px;
+            max-width: 95vw;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+        }
+        #cat-box h3 { margin: 0 0 24px; font-size: 1.25rem; color: #f1f5f9; font-weight: 600; }
+        #cat-box input {
+            width: 100%; padding: 12px 14px; margin-bottom: 14px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            font-size: 0.93rem;
+            color: #f1f5f9;
+            box-sizing: border-box;
+            font-family: inherit;
+            transition: all 0.25s;
+        }
+        #cat-box input::placeholder { color: #475569; }
+        #cat-box input:focus {
+            outline: none;
+            border-color: #4facfe;
+            background: rgba(79,172,254,0.07);
+            box-shadow: 0 0 0 3px rgba(79,172,254,0.12);
+        }
+        #cat-box label { font-size: 0.85rem; color: #64748b; margin-bottom: 6px; display: block; }
+        .cat-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+        .cat-actions button {
+            padding: 11px 22px; border: none;
+            border-radius: 10px; cursor: pointer; font-size: 0.93rem;
+            font-family: inherit; font-weight: 500; transition: all 0.2s;
+        }
+        #cat-cancel-btn { background: rgba(255,255,255,0.08); color: #94a3b8; }
+        #cat-cancel-btn:hover { background: rgba(255,255,255,0.13); }
+        #cat-save-btn { background: linear-gradient(135deg, #4facfe, #00c6ff); color: #fff; font-weight: 600; box-shadow: 0 4px 14px rgba(79,172,254,0.35); }
+        #cat-save-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(79,172,254,0.45); }
+        #cat-msg { font-size: 0.88rem; min-height: 20px; margin: 8px 0 0; }
+
+        .dynamic-category-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            position: relative;
+            display: block;
+        }
+        .dynamic-category-card:hover {
+            transform: translateY(-12px);
+            background: rgba(255,255,255,0.07);
+            border-color: rgba(79,172,254,0.35);
+            box-shadow: 0 28px 56px rgba(0,0,0,0.45), 0 0 0 1px rgba(79,172,254,0.15);
+        }
+        .dynamic-category-card .dyn-img {
+            width: 100%; height: 210px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1f35, #2d1b69);
+        }
+        .dynamic-category-card .dyn-img img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.45s cubic-bezier(0.4,0,0.2,1);
+        }
+        .dynamic-category-card:hover .dyn-img img { transform: scale(1.09); }
+        .dynamic-category-card .dyn-img-placeholder {
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #1e2a4a, #2d1b69);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3rem;
+        }
+        .dynamic-category-card h3 {
+            font-size: 19px; margin: 18px 20px 8px; color: #f1f5f9; font-weight: 600;
+        }
+        .dynamic-category-card p {
+            margin: 0 20px 20px; color: #64748b; font-size: 13.5px;
+        }
+        .del-cat-btn {
+            position: absolute; top: 10px; right: 10px;
+            background: rgba(239,68,68,0.85); color: #fff;
+            border: none; border-radius: 50%;
+            width: 30px; height: 30px; font-size: 1.1rem;
+            cursor: pointer; z-index: 2;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .del-cat-btn:hover { background: rgba(220,38,38,1); }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">Through My Eyes</div>
+            <div class="header-search-wrapper">
+                <div class="search-icon">🔍</div>
+                <input type="text" id="searchInput" placeholder="Rechercher un photographe..." autocomplete="off">
+                <div class="search-dropdown" id="searchDropdown"></div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index_v2.html">Accueil</a></li>
+                    <li><a href="#gallery">Galerie</a></li>
+                    <li><a href="#about">À propos</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li id="authNavMain"><a href="login.html">Se connecter</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" id="home">
+        <h1>Explorez ma collection de photographies professionnelles</h1>
+        <p>Capturez les Moments Précieux</p>
+        <a href="#gallery" class="cta-btn">Voir la Galerie</a>
+    </section>
+
+
+    <section class="about" id="about">
+        <div class="container">
+            <div class="about-img">
+                <img src="0142f41a-e56d-4927-9bd8-057fa824c9e9.jpg" alt="Photographe">
+            </div>
+            <div>
+                <h2>À propos de nous</h2>
+                <p>Bienvenue sur notre galerie photographique ! Nous sommes Med Amine Cherif et Hedi Toumi,
+                    étudiants en deuxième année licence en Sciences de l'Informatique (GLSI2) à la Faculté des Sciences de Tunis.</p>
+                <p>Passionnés par le développement web et la création de contenus visuels, nous avons conçu ce projet
+                   afin de proposer une plateforme moderne, intuitive et interactive pour la présentation de photographies.</p>
+                <p>Ce projet nous a permis de combiner nos compétences techniques en développement full stack
+                   avec notre sens créatif, tout en offrant une expérience utilisateur fluide et agréable.</p>
+                <p>Il représente également une opportunité de mettre en pratique nos acquis académiques
+                   à travers la réalisation d'une application web complète.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="categories" id="gallery">
+        <div class="container">
+            <h2>Mes Catégories</h2>
+            <div class="category-links" id="categoryGrid">
+                <a href="categories/nature.html" class="category-card nature-card">
+                    <div class="category-image">
+                        <img src="images/nature/IMG_4738.jpeg" alt="Nature">
+                    </div>
+                    <h3>Nature</h3>
+                    <p>Paysages et éléments naturels</p>
+                </a>
+                <a href="categories/portrait.html" class="category-card portrait-card">
+                    <div class="category-image">
+                        <img src="images/portrait/IMG_5830.jpeg" alt="Portraits">
+                    </div>
+                    <h3>Portraits</h3>
+                    <p>Expressions et caractères</p>
+                </a>
+                <a href="categories/vie_animale.html" class="category-card vie_animale-card">
+                    <div class="category-image">
+                        <img src="images/vie_animale/IMG_4642.jpeg" alt="Vie animale">
+                    </div>
+                    <h3>Vie Animale</h3>
+                    <p>Instants de vie animale</p>
+                </a>
+                <a href="categories/histoire_urbaine.html" class="category-card histoire_urbaine-card">
+                    <div class="category-image">
+                        <img src="images/histoire_urbaine/IMG_0434.jpeg" alt="Histoire urbaine">
+                    </div>
+                    <h3>Histoire Urbaine</h3>
+                    <p>Aventures autour du monde</p>
+                </a>
+            </div>
+            <button id="add-category-btn" onclick="document.getElementById('cat-overlay').style.cssText='display:flex;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:99999;align-items:center;justify-content:center;'">+ Ajouter une catégorie</button>
+        </div>
+    </section>
+
+    <!-- Modal catégorie -->
+    <div id="cat-overlay">
+        <div id="cat-box">
+            <h3>Nouvelle catégorie</h3>
+            <input type="text" id="cat-name" placeholder="Nom de la catégorie *">
+            <input type="text" id="cat-desc" placeholder="Description (optionnel)">
+            <label>Image de couverture (optionnel)</label>
+            <input type="file" id="cat-cover" accept="image/*">
+            <p id="cat-msg"></p>
+            <div class="cat-actions">
+                <button id="cat-cancel-btn" onclick="document.getElementById('cat-overlay').style.display='none'">Annuler</button>
+                <button id="cat-save-btn" onclick="doSaveCategory()">Créer</button>
+            </div>
+        </div>
+    </div>
+
+    <section class="contact" id="contact">
+        <div class="container">
+            <h2>Me Contacter</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Envoyez-moi un Message</h3>
+                    <p>Intéressé par une séance photo ? N'hésitez pas à me contacter.</p>
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <strong>📧 Email :</strong>
+                            <span>aminecherif746@gmail.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <strong>📱 Téléphone :</strong>
+                            <span>+216 25 216 720 / +216 26 919 048</span>
+                        </div>
+                        <div class="contact-item">
+                            <strong>📍 Localisation :</strong>
+                            <span>Tunis, Tunisie</span>
+                        </div>
+                    </div>
+                </div>
+                <form class="contact-form">
+                    <div class="form-group">
+                        <label for="name">Votre Nom</label>
+                        <input type="text" id="name" name="name" placeholder="Entrez votre nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Votre Email</label>
+                        <input type="email" id="email" name="email" placeholder="Entrez votre email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Sujet</label>
+                        <input type="text" id="subject" name="subject" placeholder="Sujet de votre message" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" placeholder="Écrivez votre message ici..." required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Envoyer le Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Through My Eyes - Galerie Photographique. | Design par Med Amine Cherif / Hedi Toumi</p>
+        </div>
+    </footer>
+
+    <script src="auth.js"></script>
+
+    <!-- Script isolé pour le modal catégorie -->
+    <script>
+    var API_URL2 = 'http://localhost:5000/api';
+
+    function showCatMsg(text, ok) {
+        var m = document.getElementById('cat-msg');
+        if (!m) { alert(text); return; }
+        m.style.cssText = 'display:block;padding:8px;border-radius:4px;margin:8px 0;font-size:0.95rem;' + (ok ? 'color:#2e7d32;background:#e8f5e9;' : 'color:#c62828;background:#fdecea;');
+        m.textContent = text;
+    }
+
+    function doSaveCategory() {
+        var name = document.getElementById('cat-name').value.trim();
+        var desc = document.getElementById('cat-desc').value.trim();
+        var fileInput = document.getElementById('cat-cover');
+
+        if (!name) { showCatMsg('Le nom est requis.', false); return; }
+
+        var token = (typeof auth !== 'undefined') ? auth.getToken() : null;
+        if (!token) { showCatMsg('Vous devez vous connecter sur login.html.', false); return; }
+
+        showCatMsg('Création en cours...', true);
+
+        var body = { name: name, description: desc, coverImage: '' };
+
+        var doFetch = function(img) {
+            body.coverImage = img;
+            fetch(API_URL2 + '/categories', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify(body)
+            })
+            .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, d: d }; }); })
+            .then(function(x) {
+                if (!x.ok) { showCatMsg(x.d.message || 'Erreur serveur.', false); return; }
+                showCatMsg('Catégorie créée !', true);
+                document.getElementById('cat-name').value = '';
+                document.getElementById('cat-desc').value = '';
+                if (fileInput) fileInput.value = '';
+                setTimeout(function() {
+                    document.getElementById('cat-overlay').style.display = 'none';
+                    if (typeof loadDynamicCategories === 'function') loadDynamicCategories();
+                }, 1000);
+            })
+            .catch(function(e) { showCatMsg('Erreur: ' + e.message, false); });
+        };
+
+        if (fileInput && fileInput.files[0]) {
+            var r = new FileReader();
+            r.onload = function() { doFetch(r.result); };
+            r.onerror = function() { showCatMsg('Erreur lecture image.', false); };
+            r.readAsDataURL(fileInput.files[0]);
+        } else {
+            doFetch('');
+        }
+    }
+    </script>
+
+    <script>
+    // ── Nav ────────────────────────────────────────────
+    function updateNav() {
+        var nav = document.getElementById('authNavMain');
+        if (!nav) return;
+        if (typeof auth === 'undefined') return;
+        if (auth.isLoggedIn()) {
+            var user = auth.getUser();
+            nav.innerHTML =
+                '<div class="account-menu">' +
+                    '<span class="account-trigger">👤 ' + user.username + ' ▾</span>' +
+                    '<div class="account-dropdown">' +
+                        '<a href="#" id="logoutLink">Déconnexion</a>' +
+                        '<a href="#" id="deleteAccountLink" class="danger">Supprimer mon compte</a>' +
+                    '</div>' +
+                '</div>';
+            document.getElementById('logoutLink').onclick = function(e) {
+                e.preventDefault();
+                auth.logout();
+                updateNav();
+                loadDynamicCategories();
+            };
+            document.getElementById('deleteAccountLink').onclick = async function(e) {
+                e.preventDefault();
+                if (!confirm('Supprimer définitivement votre compte et toutes vos données ?')) return;
+                const result = await auth.deleteAccount();
+                if (result.success) {
+                    updateNav();
+                    loadDynamicCategories();
+                } else {
+                    alert('Erreur : ' + result.message);
+                }
+            };
+        } else {
+            nav.innerHTML = '<a href="login.html">Se connecter</a>';
+        }
+    }
+
+    // ── Catégories dynamiques ──────────────────────────
+    async function loadDynamicCategories() {
+        var grid = document.getElementById('categoryGrid');
+        var old = grid.querySelectorAll('.dynamic-category-card');
+        old.forEach(function(el) { el.remove(); });
+
+        try {
+            var isLogged = (typeof auth !== 'undefined') && auth.isLoggedIn();
+            var userId = isLogged ? auth.getUser().id : null;
+            var fetchOpts = isLogged ? { headers: { 'Authorization': 'Bearer ' + auth.getToken() } } : {};
+            var res = await fetch(API_URL + '/categories', fetchOpts);
+            if (!res.ok) return;
+            var cats = await res.json();
+
+            cats.forEach(function(cat) {
+                var card = document.createElement('a');
+                card.href = 'categories/dynamic.html?id=' + cat.id
+                    + '&slug=' + encodeURIComponent(cat.slug)
+                    + '&name=' + encodeURIComponent(cat.name)
+                    + '&desc=' + encodeURIComponent(cat.description || '');
+                card.className = 'dynamic-category-card';
+                var imgHtml = cat.coverImage
+                    ? '<img src="' + cat.coverImage + '" alt="' + cat.name + '">'
+                    : '<div class="dyn-img-placeholder">📷</div>';
+                card.innerHTML = '<div class="dyn-img">' + imgHtml + '</div>' +
+                    '<h3>' + cat.name + '</h3>' +
+                    '<p>' + (cat.description || '') + '</p>';
+
+                if (isLogged && cat.createdBy && cat.createdBy.id === userId) {
+                    var del = document.createElement('button');
+                    del.className = 'del-cat-btn';
+                    del.textContent = '×';
+                    del.onclick = function(e) {
+                        e.preventDefault();
+                        if (confirm('Supprimer cette catégorie ?')) {
+                            fetch(API_URL + '/categories/' + cat.id, {
+                                method: 'DELETE',
+                                headers: { 'Authorization': 'Bearer ' + auth.getToken() }
+                            }).then(function() { loadDynamicCategories(); });
+                        }
+                    };
+                    card.appendChild(del);
+                }
+                grid.appendChild(card);
+            });
+        } catch(e) {
+            console.error('Erreur catégories:', e);
+        }
+    }
+
+    try { updateNav(); } catch(e) {}
+    try { loadDynamicCategories(); } catch(e) { console.error(e); }
+
+    // ── Search ─────────────────────────────────────────
+    var allUsers = [];
+
+    async function initSearch() {
+        try {
+            var res = await fetch(API_URL + '/users');
+            if (res.ok) { allUsers = await res.json(); return; }
+        } catch(e) {}
+        // Fallback: build from photos + categories
+        try {
+            var usersMap = {};
+            var [pr, cr] = await Promise.all([fetch(API_URL+'/photos'), fetch(API_URL+'/categories')]);
+            var photos = pr.ok ? await pr.json() : [];
+            var cats   = cr.ok ? await cr.json() : [];
+            photos.forEach(function(p) {
+                if (!p.uploadedBy) return;
+                var id = typeof p.uploadedBy==='string' ? p.uploadedBy : (p.uploadedBy.id||p.uploadedBy._id);
+                var un = typeof p.uploadedBy==='string' ? p.uploadedBy : p.uploadedBy.username;
+                if (id && un) { usersMap[id] = usersMap[id] || {id:id,username:un,photoCount:0}; usersMap[id].photoCount++; }
+            });
+            cats.forEach(function(c) {
+                if (!c.createdBy) return;
+                var id=c.createdBy.id, un=c.createdBy.username;
+                if (id && un && !usersMap[id]) usersMap[id]={id:id,username:un,photoCount:0};
+            });
+            allUsers = Object.values(usersMap);
+        } catch(e) {}
+    }
+
+    function renderDropdown(list) {
+        searchDropdown.innerHTML = '';
+        if (list.length === 0) {
+            searchDropdown.innerHTML = '<div class="search-no-result">Aucun photographe trouvé</div>';
+        } else {
+            list.forEach(function(u) {
+                var a = document.createElement('a');
+                a.className = 'search-item';
+                a.href = 'photographer.html?id='+u.id+'&username='+encodeURIComponent(u.username)+'&email='+encodeURIComponent(u.email||'');
+                var count = u.photoCount || 0;
+                var avatarHtml = u.avatar
+                    ? '<div class="search-avatar" style="background:none;padding:0;overflow:hidden;"><img src="'+u.avatar+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>'
+                    : '<div class="search-avatar">'+u.username.charAt(0).toUpperCase()+'</div>';
+                a.innerHTML =
+                    avatarHtml+
+                    '<div>'+
+                        '<div class="search-name">'+u.username+'</div>'+
+                        '<div class="search-sub">'+count+' photo'+(count!==1?'s':'')+'</div>'+
+                    '</div>';
+                searchDropdown.appendChild(a);
+            });
+        }
+        searchDropdown.classList.add('open');
+    }
+
+    var searchInput    = document.getElementById('searchInput');
+    var searchDropdown = document.getElementById('searchDropdown');
+
+    searchInput.addEventListener('focus', function() {
+        var sorted = allUsers.slice().sort(function(a,b){ return (b.photoCount||0)-(a.photoCount||0); });
+        renderDropdown(sorted);
+    });
+
+    searchInput.addEventListener('input', function() {
+        var q = this.value.trim().toLowerCase();
+        if (!q) {
+            var sorted = allUsers.slice().sort(function(a,b){ return (b.photoCount||0)-(a.photoCount||0); });
+            renderDropdown(sorted);
+            return;
+        }
+        var filtered = allUsers.filter(function(u){ return u.username.toLowerCase().includes(q); })
+            .sort(function(a,b){ return (b.photoCount||0)-(a.photoCount||0); });
+        renderDropdown(filtered);
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.header-search-wrapper')) searchDropdown.classList.remove('open');
+    });
+
+    initSearch();
+    </script>
+</body>
+</html>

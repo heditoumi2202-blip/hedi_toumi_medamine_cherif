@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>nature</title>
+
+    <link rel="stylesheet" href="../style_v2.css">
+    <link rel="stylesheet" href="../styles categories/style_nature.css">
+
+    <style>
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .gallery-item {
+            position: relative;
+        }
+
+        .add-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="container">
+        <a href="../index_v2.html" class="logo">Through My Eyes</a>
+        <nav>
+            <ul>
+                <li><a href="../index_v2.html">Accueil</a></li>
+                <li><a href="../index_v2.html#gallery">Galerie</a></li>
+                <li><a href="../index_v2.html#about">À propos</a></li>
+                <li><a href="../index_v2.html#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<section class="category-hero nature-hero">
+    <div class="hero-content">
+        <h1>Galerie Nature</h1>
+        <p>Paysages et éléments naturels</p>
+    </div>
+</section>
+
+<section class="gallery-section">
+    <div class="container">
+
+        <!-- AJOUT IMAGE -->
+        <div class="add-section">
+            <input type="file" id="imageInput">
+            <button onclick="addImage()">Ajouter Image</button>
+        </div>
+
+        <div class="gallery-grid nature-gallery">
+
+            <div class="gallery-item">
+                <img src="../images/nature/IMG_4738.jpeg">
+                <button onclick="deleteImage(this)" class="delete-btn">X</button>
+                <div class="item-info">
+                    <h3>24/06/2022</h3>
+                    <p>f/5.6, 1/300s, ISO 200</p>
+                </div>
+            </div>
+
+            <div class="gallery-item">
+                <img src="../images/nature/IMG_4761.jpeg">
+                <button onclick="deleteImage(this)" class="delete-btn">X</button>
+                <div class="item-info">
+                    <h3>24/06/2022</h3>
+                    <p>f/5.6, 1/300s, ISO 200</p>
+                </div>
+            </div>
+
+            <div class="gallery-item">
+                <img src="../images/nature/IMG_4878.jpeg">
+                <button onclick="deleteImage(this)" class="delete-btn">X</button>
+                <div class="item-info">
+                    <h3>01/06/2022</h3>
+                    <p>f/5.6, 1/300s, ISO 200</p>
+                </div>
+            </div>
+
+            <div class="gallery-item">
+                <img src="../images/nature/IMG_0444.jpeg">
+                <button onclick="deleteImage(this)" class="delete-btn">X</button>
+                <div class="item-info">
+                    <h3>07/08/2025</h3>
+                    <p>f/1.8, 1/60s, ISO 320</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="back-section">
+    <div class="container">
+        <a href="../index_v2.html" class="back-btn">← Retour aux catégories</a>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2026 Through My Eyes - Galerie Photographique.</p>
+    </div>
+</footer>
+
+<!-- JAVASCRIPT -->
+<script>
+function addImage() {
+    const input = document.getElementById("imageInput");
+    const file = input.files[0];
+
+    if (!file) {
+        alert("Choisir une image !");
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        const gallery = document.querySelector(".nature-gallery");
+
+        const div = document.createElement("div");
+        div.className = "gallery-item";
+
+        div.innerHTML = `
+            <img src="${e.target.result}">
+            <button onclick="deleteImage(this)" class="delete-btn">X</button>
+            <div class="item-info">
+                <h3>Nouvelle image</h3>
+                <p>Ajoutée maintenant</p>
+            </div>
+        `;
+
+        gallery.appendChild(div);
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function deleteImage(btn) {
+    btn.parentElement.remove();
+}
+</script>
+
+</body>
+</html>

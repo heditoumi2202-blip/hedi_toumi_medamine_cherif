@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>portrait</title>
+    
+    <link rel="stylesheet" href="../style_v2.css">
+    
+    <link rel="stylesheet" href="../styles categories/style_portrait.css">
+
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <a href="../index_v2.html" class="logo">Through My Eyes</a>
+            <nav>
+                <ul>
+                    <li><a href="../index_v2.html">Accueil</a></li>
+                    <li><a href="../index_v2.html#gallery">Galerie</a></li>
+                    <li><a href="../index_v2.html#about">À propos</a></li>
+                    <li><a href="../index_v2.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="category-hero portrait-hero">
+        <div class="hero-content">
+            <h1>Galerie Portraits </h1>
+            <p>Capturez l'essence et l'authenticité de chaque personne</p>
+        </div>
+    </section>
+
+
+    <section class="gallery-section">
+        <div class="container">
+            <div class="gallery-grid portrait-gallery">
+                <div class="gallery-item">
+                    <img src="../images/portrait/IMG_5830.jpeg" alt="Portrait">
+                    <div class="item-info">
+                        <h3>18/05/2022</h3>
+                        <p>f/1.6, 1/200s, ISO 32</p>
+                    </div>
+                </div>
+
+                <div class="gallery-item">
+                    <img src="../images/portrait/IMG_7001.jpeg" alt="Portrait femme">
+                    <div class="item-info">
+                        <h3>25/02/2022</h3>
+                        <p>f/1.6, 1/17s, ISO 4000</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <section class="back-section">
+        <div class="container">
+            <a href="../index_v2.html" class="back-btn">← Retour aux catégories</a>
+        </div>
+    </section>
+
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Through My Eyes - Galerie Photographique.</p>
+        </div>
+    </footer>
+    <script>
+function addImage() {
+    const input = document.getElementById("imageInput");
+    const file = input.files[0];
+
+    if (!file) {
+        alert("Choisissez une image !");
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        const gallery = document.getElementById("gallery");
+
+        const div = document.createElement("div");
+        div.className = "gallery-item";
+
+        div.innerHTML = `
+            <img src="${e.target.result}" alt="New Image">
+            <button class="delete-btn" onclick="deleteImage(this)">×</button>
+            <div class="item-info">
+                <h3>Aujourd'hui</h3>
+                <p>Ajout manuel</p>
+            </div>
+        `;
+
+        gallery.appendChild(div);
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function deleteImage(button) {
+    const item = button.parentElement;
+    item.remove();
+}
+</script>
+
+</body>
+</html>

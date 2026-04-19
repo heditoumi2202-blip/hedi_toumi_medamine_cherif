@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photographe - Through My Eyes</title>
+    <link rel="stylesheet" href="style_v2.css">
+    <style>
+        /* ── HERO ──────────────────────────────────────── */
+        .photographer-hero {
+            background: linear-gradient(135deg, #0d1117 0%, #1a1f35 100%);
+            padding: 80px 24px 56px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        .photographer-avatar {
+            width: 88px; height: 88px; border-radius: 50%;
+            background: linear-gradient(135deg, #4facfe, #00c6ff);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.2rem; font-weight: 700; color: white;
+            margin: 0 auto 18px;
+            box-shadow: 0 8px 28px rgba(79,172,254,0.4);
+        }
+        .photographer-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 34px; color: #f1f5f9; margin-bottom: 6px;
+        }
+        .photographer-hero .since { color: #475569; font-size: 13px; }
+        .stats-bar {
+            display: flex; justify-content: center; gap: 52px; margin-top: 28px;
+        }
+        .stat-number { font-size: 26px; font-weight: 700; color: #4facfe; }
+        .stat-label  { font-size: 11px; color: #475569; letter-spacing: 0.8px; margin-top: 2px; }
+
+        /* ── CATEGORIES GRID ───────────────────────────── */
+        .pg-section { padding: 64px 24px; max-width: 1200px; margin: 0 auto; }
+
+        .section-heading {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px; color: #f1f5f9;
+            margin-bottom: 36px;
+            position: relative; padding-bottom: 14px;
+        }
+        .section-heading::after {
+            content: ''; position: absolute; bottom: 0; left: 0;
+            width: 48px; height: 3px;
+            background: linear-gradient(90deg, #4facfe, #00c6ff);
+            border-radius: 2px;
+        }
+
+        .cats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 24px;
+        }
+
+        .cat-card {
+            border-radius: 18px; overflow: hidden;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+            position: relative;
+        }
+        .cat-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(79,172,254,0.35);
+            box-shadow: 0 24px 50px rgba(0,0,0,0.45), 0 0 0 1px rgba(79,172,254,0.15);
+        }
+        .cat-card-img {
+            width: 100%; height: 210px; overflow: hidden;
+            background: linear-gradient(135deg, #1a1f35, #2d1b69);
+            position: relative;
+        }
+        .cat-card-img img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.45s cubic-bezier(0.4,0,0.2,1);
+        }
+        .cat-card:hover .cat-card-img img { transform: scale(1.08); }
+        .cat-card-img .placeholder-icon {
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3rem; color: rgba(255,255,255,0.2);
+        }
+        .cat-card-body { padding: 18px 20px 20px; }
+        .cat-card-body h3 { font-size: 18px; font-weight: 600; color: #f1f5f9; margin-bottom: 5px; }
+        .cat-card-body p  { font-size: 13px; color: #64748b; }
+        .cat-photo-count {
+            position: absolute; top: 12px; right: 12px;
+            background: rgba(0,0,0,0.65); backdrop-filter: blur(6px);
+            color: white; font-size: 12px; font-weight: 600;
+            padding: 4px 10px; border-radius: 20px;
+        }
+
+        /* ── PHOTOS PANEL (slide-in) ────────────────────── */
+        #photos-panel {
+            display: none;
+            padding: 0 24px 64px;
+            max-width: 1200px; margin: 0 auto;
+        }
+        #photos-panel.open { display: block; }
+
+        .panel-header {
+            display: flex; align-items: center; gap: 16px;
+            margin-bottom: 28px; padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        .panel-back {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #94a3b8; border-radius: 50px;
+            padding: 8px 18px; font-size: 13px;
+            cursor: pointer; transition: all 0.2s; font-family: inherit;
+        }
+        .panel-back:hover { background: rgba(255,255,255,0.11); color: white; }
+        .panel-title { font-family: 'Playfair Display', serif; font-size: 24px; color: #f1f5f9; }
+
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+        .photo-card {
+            border-radius: 14px; overflow: hidden;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            cursor: zoom-in;
+            transition: all 0.3s;
+        }
+        .photo-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(79,172,254,0.3);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+        }
+        .photo-card img {
+            width: 100%; height: 220px; object-fit: cover; display: block;
+            transition: transform 0.4s;
+        }
+        .photo-card:hover img { transform: scale(1.06); }
+        .photo-info { padding: 12px 14px; }
+        .photo-info h4 { font-size: 14px; font-weight: 600; color: #e2e8f0; margin-bottom: 2px; }
+        .photo-info p  { font-size: 12px; color: #475569; }
+
+        /* ── LIGHTBOX ───────────────────────────────────── */
+        #lightbox {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.93); z-index: 9999;
+            align-items: center; justify-content: center; cursor: zoom-out;
+        }
+        #lightbox.active { display: flex; }
+        #lightbox img { max-width: 90vw; max-height: 88vh; object-fit: contain; border-radius: 8px; }
+        #lightbox-close {
+            position: absolute; top: 20px; right: 28px;
+            background: none; border: none; color: white;
+            font-size: 2.4rem; cursor: pointer; opacity: 0.7; transition: opacity 0.2s;
+        }
+        #lightbox-close:hover { opacity: 1; }
+        #lightbox-caption {
+            position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+            color: #e2e8f0; font-size: 14px;
+            background: rgba(0,0,0,0.5); padding: 6px 18px; border-radius: 20px;
+        }
+
+        /* ── CONTACT ────────────────────────────────────── */
+        .contact-section {
+            background: #0d1117;
+            border-top: 1px solid rgba(255,255,255,0.07);
+            padding: 72px 24px;
+            text-align: center;
+        }
+        .contact-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px; color: #f1f5f9; margin-bottom: 12px;
+        }
+        .contact-section .sub {
+            color: #64748b; font-size: 15px; margin-bottom: 40px;
+        }
+        .contact-cards {
+            display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;
+        }
+        .contact-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px; padding: 24px 32px;
+            min-width: 220px;
+            transition: border-color 0.25s;
+        }
+        .contact-card:hover { border-color: rgba(79,172,254,0.3); }
+        .contact-card .icon { font-size: 1.8rem; margin-bottom: 10px; }
+        .contact-card .label { font-size: 11px; color: #475569; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 6px; }
+        .contact-card .value { font-size: 15px; color: #e2e8f0; font-weight: 500; word-break: break-all; }
+        .contact-card a { color: #4facfe; text-decoration: none; }
+        .contact-card a:hover { text-decoration: underline; }
+
+        /* ── MISC ───────────────────────────────────────── */
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 22px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.09);
+            color: #94a3b8; border-radius: 50px;
+            text-decoration: none; font-size: 13.5px; font-weight: 500;
+            transition: all 0.25s; margin-bottom: 44px; display: inline-flex;
+        }
+        .back-link:hover { background: rgba(255,255,255,0.1); color: white; }
+
+        .empty { text-align: center; padding: 60px; color: #475569; font-size: 15px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <a href="index_v2.html" class="logo">Through My Eyes</a>
+        <nav><ul>
+            <li><a href="index_v2.html">Accueil</a></li>
+            <li><a href="index_v2.html#gallery">Galerie</a></li>
+            <li><a href="index_v2.html#about">À propos</a></li>
+            <li><a href="index_v2.html#contact">Contact</a></li>
+            <li id="authNav"></li>
+        </ul></nav>
+    </div>
+</header>
+
+<!-- Hero -->
+<section class="photographer-hero">
+    <div class="photographer-avatar" id="avatarEl">?</div>
+    <h1 id="photographerName">Chargement...</h1>
+    <p class="since" id="photographerSince"></p>
+    <div class="stats-bar">
+        <div class="stat">
+            <div class="stat-number" id="statPhotos">–</div>
+            <div class="stat-label">PHOTOS</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number" id="statCats">–</div>
+            <div class="stat-label">CATÉGORIES</div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories grid -->
+<div class="pg-section" id="catsSection">
+    <a href="index_v2.html" class="back-link">← Retour à l'accueil</a>
+    <h2 class="section-heading">Catégories</h2>
+    <div class="cats-grid" id="catsGrid">
+        <p class="empty">Chargement...</p>
+    </div>
+</div>
+
+<!-- Photos panel (shown when category clicked) -->
+<div id="photos-panel">
+    <div class="panel-header">
+        <button class="panel-back" onclick="showCategories()">← Retour</button>
+        <span class="panel-title" id="panelTitle"></span>
+    </div>
+    <div class="photos-grid" id="photosGrid"></div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox">
+    <button id="lightbox-close" onclick="closeLightbox()">&times;</button>
+    <img id="lightbox-img" src="" alt="">
+    <div id="lightbox-caption"></div>
+</div>
+
+<!-- Contact section -->
+<section class="contact-section" id="contactSection" style="display:none;">
+    <h2>Contacter ce photographe</h2>
+    <p class="sub">Intéressé par une collaboration ou une séance photo ?</p>
+    <div class="contact-cards">
+        <div class="contact-card">
+            <div class="icon">👤</div>
+            <div class="label">Photographe</div>
+            <div class="value" id="contactName">–</div>
+        </div>
+        <div class="contact-card">
+            <div class="icon">📧</div>
+            <div class="label">Email</div>
+            <div class="value" id="contactEmail">–</div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2026 Through My Eyes - Galerie Photographique. | Design par Med Amine Cherif / Hedi Toumi</p>
+    </div>
+</footer>
+
+<script src="auth.js"></script>
+<script>
+const params   = new URLSearchParams(window.location.search);
+const userId   = params.get('id');
+const username = params.get('username');
+const userEmail = params.get('email') || '';
+
+// Static category cover images (same as main page)
+const staticCovers = {
+    'nature':          'images/nature/IMG_4738.jpeg',
+    'portrait':        'images/portrait/IMG_5830.jpeg',
+    'vie_animale':     'images/vie_animale/IMG_4642.jpeg',
+    'histoire_urbaine':'images/histoire_urbaine/IMG_0434.jpeg'
+};
+
+// Auth nav
+const nav = document.getElementById('authNav');
+if (auth.isLoggedIn()) {
+    const u = auth.getUser();
+    nav.innerHTML = `<span>${u.username}</span> | <a href="#" onclick="auth.logout();location.reload()">Déconnexion</a>`;
+} else {
+    nav.innerHTML = '<a href="login.html">Se connecter</a>';
+}
+
+if (!userId || !username) {
+    document.getElementById('catsGrid').innerHTML = '<p class="empty">Photographe introuvable.</p>';
+} else {
+    document.title = username + ' - Through My Eyes';
+    document.getElementById('photographerName').textContent = username;
+    document.getElementById('avatarEl').textContent = username.charAt(0).toUpperCase();
+
+    // Contact section
+    document.getElementById('contactSection').style.display = 'block';
+    document.getElementById('contactName').textContent = username;
+
+    // Always fetch email (and avatar) from API
+    fetch(`${API_URL}/users`)
+        .then(r => r.ok ? r.json() : [])
+        .then(users => {
+            const u = users.find(x => x.id === userId);
+            const email = (u && u.email) ? u.email : userEmail;
+            if (email) {
+                document.getElementById('contactEmail').innerHTML =
+                    `<a href="mailto:${email}">${email}</a>`;
+            } else {
+                document.getElementById('contactEmail').textContent = 'Non disponible';
+            }
+            if (u && u.avatar) {
+                const el = document.getElementById('avatarEl');
+                el.textContent = '';
+                el.style.background = 'none';
+                el.style.padding = '0';
+                el.innerHTML = `<img src="${u.avatar}" alt="${username}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            }
+        })
+        .catch(() => {
+            if (userEmail) {
+                document.getElementById('contactEmail').innerHTML =
+                    `<a href="mailto:${userEmail}">${userEmail}</a>`;
+            }
+        });
+
+    loadData();
+}
+
+// Grouped photos by category slug
+let groupedPhotos = {};
+
+async function loadData() {
+    try {
+        const [photosRes, catsRes] = await Promise.all([
+            fetch(`${API_URL}/photos`),
+            fetch(`${API_URL}/categories`)
+        ]);
+        const allPhotos = await photosRes.json();
+        const allCats   = await catsRes.json();
+
+        // Filter this user's photos
+        const myPhotos = allPhotos.filter(p => {
+            const uid = typeof p.uploadedBy === 'string' ? p.uploadedBy : (p.uploadedBy?.id || p.uploadedBy?._id);
+            return uid === userId;
+        });
+
+        // Group by category slug
+        groupedPhotos = {};
+        myPhotos.forEach(p => {
+            const slug = p.category || 'autres';
+            if (!groupedPhotos[slug]) groupedPhotos[slug] = [];
+            groupedPhotos[slug].push(p);
+        });
+
+        // Build category name map from user's own categories
+        const catMap = {};
+        allCats.forEach(c => { catMap[c.slug] = c; });
+
+        // Stats
+        document.getElementById('statPhotos').textContent = myPhotos.length;
+        document.getElementById('statCats').textContent   = Object.keys(groupedPhotos).length;
+
+        renderCategories(catMap);
+    } catch(e) {
+        document.getElementById('catsGrid').innerHTML = '<p class="empty">Erreur de chargement.</p>';
+    }
+}
+
+function renderCategories(catMap) {
+    const grid = document.getElementById('catsGrid');
+
+    if (Object.keys(groupedPhotos).length === 0) {
+        grid.innerHTML = '<p class="empty">Ce photographe n\'a pas encore publié de photos.</p>';
+        return;
+    }
+
+    grid.innerHTML = '';
+    Object.entries(groupedPhotos).forEach(([slug, photos]) => {
+        const cat    = catMap[slug] || {};
+        const name   = cat.name || slug.replace(/_/g, ' ');
+        const desc   = cat.description || '';
+        const cover  = staticCovers[slug] || cat.coverImage || (photos[0] ? photos[0].imageUrl : null);
+        const count  = photos.length;
+
+        const card = document.createElement('div');
+        card.className = 'cat-card';
+        card.innerHTML = `
+            <div class="cat-card-img">
+                ${cover
+                    ? `<img src="${cover}" alt="${name}">`
+                    : `<div class="placeholder-icon">📷</div>`}
+            </div>
+            <span class="cat-photo-count">${count} photo${count > 1 ? 's' : ''}</span>
+            <div class="cat-card-body">
+                <h3>${name}</h3>
+                <p>${desc || 'Voir les photos'}</p>
+            </div>
+        `;
+        card.addEventListener('click', () => showPhotos(slug, name));
+        grid.appendChild(card);
+    });
+}
+
+function showPhotos(slug, catName) {
+    document.getElementById('catsSection').style.display  = 'none';
+    document.getElementById('photos-panel').classList.add('open');
+    document.getElementById('panelTitle').textContent = catName;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    const grid  = document.getElementById('photosGrid');
+    const photos = groupedPhotos[slug] || [];
+    grid.innerHTML = '';
+
+    photos.forEach(photo => {
+        const card = document.createElement('div');
+        card.className = 'photo-card';
+        card.innerHTML = `
+            <img src="${photo.imageUrl}" alt="${photo.title}" loading="lazy">
+            <div class="photo-info">
+                <h4>${photo.title}</h4>
+                <p>${photo.description || ''}</p>
+            </div>
+        `;
+        card.addEventListener('click', () => openLightbox(photo.imageUrl, photo.title));
+        grid.appendChild(card);
+    });
+}
+
+function showCategories() {
+    document.getElementById('photos-panel').classList.remove('open');
+    document.getElementById('catsSection').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function openLightbox(src, title) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox-caption').textContent = title || '';
+    document.getElementById('lightbox').classList.add('active');
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
+document.getElementById('lightbox').addEventListener('click', e => {
+    if (e.target === document.getElementById('lightbox')) closeLightbox();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+</script>
+</body>
+</html>
